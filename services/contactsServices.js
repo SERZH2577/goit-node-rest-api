@@ -51,9 +51,13 @@ async function updateContactById(contactId, data) {
   const contacts = await listContacts();
   const i = contacts.findIndex((contact) => contact.id === contactId);
 
-  if (i !== -1) null;
+  if (i === -1) null;
 
-  contacts[i] = { ...contacts[i], ...data };
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined) {
+      contacts[i][key] = value;
+    }
+  }
 
   await writeContacts(contacts);
 

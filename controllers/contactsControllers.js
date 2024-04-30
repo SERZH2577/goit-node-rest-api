@@ -10,6 +10,7 @@ import {
   updateContactSchema,
 } from "../schemas/contactsSchemas.js";
 import HttpError from "../helpers/HttpError.js";
+import validateBody from "../helpers/validateBody.js";
 
 export const getAllContacts = async (req, res, next) => {
   try {
@@ -47,12 +48,11 @@ export const deleteContact = async (req, res, next) => {
   }
 };
 
+export const validateCreateContactBody = validateBody(createContactSchema);
+
 export const createContact = async (req, res, next) => {
   try {
     const { name, email, phone } = req.body;
-    const { error } = createContactSchema.validate({ name, email, phone });
-
-    if (error) throw HttpError(400);
 
     const newContact = await addContact(name, email, phone);
 
@@ -62,16 +62,12 @@ export const createContact = async (req, res, next) => {
   }
 };
 
+export const validateUpdateContactBody = validateBody(updateContactSchema);
+
 export const updateContact = async (req, res, next) => {
   try {
     const contactId = req.params.id;
     const { name, email, phone } = req.body;
-    const { error } = updateContactSchema.validate({ name, email, phone });
-
-    if (!name && !email && !phone)
-      throw HttpError(400, "Body must have at least one field");
-
-    if (error) throw HttpError(400);
 
     const updatedContact = await updateContactById(contactId, {
       name,
