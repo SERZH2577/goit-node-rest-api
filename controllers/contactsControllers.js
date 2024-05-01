@@ -5,12 +5,7 @@ import {
   addContact,
   updateContactById,
 } from "../services/contactsServices.js";
-import {
-  createContactSchema,
-  updateContactSchema,
-} from "../schemas/contactsSchemas.js";
 import HttpError from "../helpers/HttpError.js";
-import validateBody from "../helpers/validateBody.js";
 
 export const getAllContacts = async (req, res, next) => {
   try {
@@ -48,8 +43,6 @@ export const deleteContact = async (req, res, next) => {
   }
 };
 
-export const validateCreateContactBody = validateBody(createContactSchema);
-
 export const createContact = async (req, res, next) => {
   try {
     const { name, email, phone } = req.body;
@@ -62,12 +55,12 @@ export const createContact = async (req, res, next) => {
   }
 };
 
-export const validateUpdateContactBody = validateBody(updateContactSchema);
-
 export const updateContact = async (req, res, next) => {
   try {
     const contactId = req.params.id;
     const { name, email, phone } = req.body;
+
+    if (Object.keys(req.body).length === 0) res.status(400);
 
     const updatedContact = await updateContactById(contactId, {
       name,
