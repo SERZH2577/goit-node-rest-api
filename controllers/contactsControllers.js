@@ -60,8 +60,6 @@ export const updateContact = async (req, res, next) => {
     const contactId = req.params.id;
     const { name, email, phone } = req.body;
 
-    if (Object.keys(req.body).length === 0) res.status(400);
-
     const updatedContact = await updateContactById(contactId, {
       name,
       email,
