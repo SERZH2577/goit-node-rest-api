@@ -1,15 +1,9 @@
-import {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContactById,
-} from "../services/contactsServices.js";
+import Contact from "../models/contact.js";
 import HttpError from "../helpers/HttpError.js";
 
 export const getAllContacts = async (req, res, next) => {
   try {
-    const contacts = await listContacts();
+    const contacts = await Contact.find();
 
     if (!contacts) throw HttpError(404);
 
@@ -21,7 +15,8 @@ export const getAllContacts = async (req, res, next) => {
 
 export const getOneContact = async (req, res, next) => {
   try {
-    const contact = await getContactById(req.params.id);
+    const contactId = req.params.id;
+    const contact = await Contact.findById(contactId);
 
     if (!contact) throw HttpError(404);
 
@@ -33,7 +28,8 @@ export const getOneContact = async (req, res, next) => {
 
 export const deleteContact = async (req, res, next) => {
   try {
-    const contact = await removeContact(req.params.id);
+    const contactId = req.params.id;
+    const contact = await Contact.findByIdAndDelete(contactId);
 
     if (!contact) throw HttpError(404);
 
@@ -46,10 +42,9 @@ export const deleteContact = async (req, res, next) => {
 export const createContact = async (req, res, next) => {
   try {
     const { name, email, phone } = req.body;
+    await Contact.create({ name, email, phone });
 
-    const newContact = await addContact(name, email, phone);
-
-    res.status(201).json(newContact);
+    res.status(201).json(Contact);
   } catch (error) {
     next(error);
   }
@@ -60,11 +55,15 @@ export const updateContact = async (req, res, next) => {
     const contactId = req.params.id;
     const { name, email, phone } = req.body;
 
-    const updatedContact = await updateContactById(contactId, {
-      name,
-      email,
-      phone,
-    });
+    const updatedContact = await Contact.findByIdAndUpdate(
+      contactId,
+      {
+        name,
+        email,
+        phone,
+      },
+      { new: true }
+    );
 
     if (!updatedContact) throw HttpError(404);
 
