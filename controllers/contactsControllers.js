@@ -53,21 +53,34 @@ export const createContact = async (req, res, next) => {
 export const updateContact = async (req, res, next) => {
   try {
     const contactId = req.params.id;
-    const { name, email, phone } = req.body;
 
     const updatedContact = await Contact.findByIdAndUpdate(
       contactId,
-      {
-        name,
-        email,
-        phone,
-      },
+      req.body,
       { new: true }
     );
 
     if (!updatedContact) throw HttpError(404);
 
     res.status(200).json(updatedContact);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateStatusContact = async (req, res, next) => {
+  try {
+    const contactId = req.params.id;
+
+    const updatedStatusContact = await Contact.findByIdAndUpdate(
+      contactId,
+      req.body,
+      { new: true }
+    );
+
+    if (!updatedStatusContact) throw HttpError(404);
+
+    res.status(200).json(updatedStatusContact);
   } catch (error) {
     next(error);
   }

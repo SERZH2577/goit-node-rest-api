@@ -1,6 +1,7 @@
-import mongoose, { Schema, model } from "mongoose";
+import { Schema, model } from "mongoose";
+import { handleMongooseError } from "../helpers/handleMongooseError.js";
 
-const contactSchema = new mongoose.Schema(
+const contactSchema = new Schema(
   {
     name: { type: String, required: [true, "Set name for contact"] },
     email: { type: String },
@@ -13,9 +14,6 @@ const contactSchema = new mongoose.Schema(
   }
 );
 
-contactSchema.post("save", (error, data, next) => {
-  error.status = 400;
-  next();
-});
+contactSchema.post("save", handleMongooseError);
 
-export default mongoose.model("Contact", contactSchema);
+export default model("Contact", contactSchema);
