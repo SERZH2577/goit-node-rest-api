@@ -1,25 +1,32 @@
 import jwt from "jsonwebtoken";
+import User from "../models/users.js";
+import HttpError from "../helpers/HttpError.js";
 
 const auth = (req, res, next) => {
   const authorization = req.headers.authorization;
 
   if (typeof authorization === "undefined")
-    res.status(401).send({ message: "Invalid token" });
+    throw HttpError(401, "Not authorized");
 
   const [bearer, token] = authorization.split(" ", 2);
 
-  if (bearer !== "Bearer") throw HttpError(401);
-  // res.status(401).send({ message: "Invalid token" });
+  if (bearer !== "Bearer") throw HttpError(401, "Not authorized");
 
-  jwt.verify(token, process.env.JWT_SECRET, (error, decode) => {
-    if (error) throw HttpError(401);
-    // res.status(401).send({ message: "Invalid token" });
+  jwt.verify(token, process.env.JWT_SECRET, async (error, decode) => {
+    if (error) throw HttpError(401, "Not authorized");
 
-    req.user = {
-      id: decode.id,
-    };
+    try {
+      const user = await User.findById(decode.id);
 
-    next();
+      if (user === null) throw HttpError(401, "Not authorized");
+      if (user.token !== token) throw HttpError(401, "Not authorized");
+
+      req.user = user;
+
+      next();
+    } catch (error) {
+      next(error);
+    }
   });
 };
 
