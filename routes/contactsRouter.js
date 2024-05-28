@@ -15,6 +15,7 @@ import {
 } from "../schemas/contactsSchemas.js";
 
 const contactsRouter = express.Router();
+
 contactsRouter.get("/", getAllContacts);
 contactsRouter.get("/:id", getOneContact);
 contactsRouter.delete("/:id", deleteContact);

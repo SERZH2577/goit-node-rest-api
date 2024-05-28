@@ -4,12 +4,12 @@ import { userSchema } from "../schemas/usersSchemas.js";
 import validateBody from "../helpers/validateBody.js";
 import authMiddleware from "../middleware/auth.js";
 
-const usersRouter = express.Router();
+const authRouter = express.Router();
 const jsonParser = express.json();
 
-usersRouter.post("/register", validateBody(userSchema), jsonParser, register);
-usersRouter.post("/login", validateBody(userSchema), jsonParser, login);
-usersRouter.get("/current", authMiddleware, current);
-usersRouter.get("/logout", authMiddleware, logout);
+authRouter.post("/register", validateBody(userSchema), jsonParser, register);
+authRouter.post("/login", validateBody(userSchema), jsonParser, login);
+authRouter.get("/current", authMiddleware, current);
+authRouter.get("/logout", authMiddleware, logout);
 
-export default usersRouter;
+export default authRouter;
