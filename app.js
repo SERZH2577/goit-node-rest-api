@@ -4,8 +4,8 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import contactsRouter from "./routes/contactsRouter.js";
-import authRouter from "./routes/auth.js";
-import usersRouter from "./routes/users.js";
+import authRouter from "./routes/authRouter.js";
+import usersRouter from "./routes/usersRouter.js";
 import authMiddleware from "./middleware/auth.js";
 import "./db.js";
 
