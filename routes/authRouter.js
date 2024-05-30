@@ -1,5 +1,10 @@
 import express from "express";
-import { register, login, logout, current } from "../controllers/auth.js";
+import {
+  register,
+  login,
+  logout,
+  current,
+} from "../controllers/authControllers.js";
 import { userSchema } from "../schemas/usersSchemas.js";
 import validateBody from "../helpers/validateBody.js";
 import authMiddleware from "../middleware/auth.js";
