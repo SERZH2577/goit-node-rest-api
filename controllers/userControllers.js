@@ -16,10 +16,12 @@ export const uploadAvatar = async (req, res, next) => {
       path.resolve("public/avatar", req.file.filename)
     );
 
+    const avatarURL = path.join("avatars", req.file.filename);
+
     const user = await User.findByIdAndUpdate(
       req.user.id,
       {
-        avatarURL: req.file.filename,
+        avatarURL,
       },
       { new: true }
     );
