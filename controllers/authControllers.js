@@ -25,7 +25,7 @@ export const register = async (req, res, next) => {
     res.status(201).json({
       user: {
         email,
-        subscription: newUser,
+        avatarURL: newUser.avatarURL,
       },
     });
   } catch (error) {
