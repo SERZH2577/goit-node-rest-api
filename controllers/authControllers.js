@@ -1,7 +1,9 @@
+import crypto from "node:crypto";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import gravatar from "gravatar";
 import User from "../models/users.js";
+import sendMail from "../mail/mail.js";
 import HttpError from "../helpers/HttpError.js";
 
 export const register = async (req, res, next) => {
@@ -15,12 +17,16 @@ export const register = async (req, res, next) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
     const defaultAvatar = gravatar.url(email);
+    const verifyToken = crypto.randomUUID();
 
     const newUser = await User.create({
       email: emailInLowerCase,
       password: passwordHash,
       avatarURL: defaultAvatar,
+      token: verifyToken,
     });
+
+    await sendMail(email);
 
     res.status(201).json({
       user: {
@@ -39,12 +45,12 @@ export const login = async (req, res, next) => {
 
   try {
     const user = await User.findOne({ email: emailInLowerCase });
-
     if (user === null) throw HttpError(401, "Email or password is wrong");
 
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (isMatch === false) throw HttpError(401, "Email or password is wrong");
+
+    if (user.verify === false) throw HttpError(401, "Please verify your email");
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "24h",
