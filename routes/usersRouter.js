@@ -1,9 +1,23 @@
 import express from "express";
-import { uploadAvatar } from "../controllers/userControllers.js";
+import {
+  uploadAvatar,
+  userToken,
+  repeatVerify,
+} from "../controllers/userControllers.js";
 import updateMiddleware from "../middleware/upload.js";
+import authMiddleware from "../middleware/auth.js";
+import { emailSchema } from "../schemas/usersSchemas.js";
+import validateBody from "../helpers/validateBody.js";
 
 const usersRouter = express.Router();
 
-usersRouter.patch("/avatar", updateMiddleware.single("avatar"), uploadAvatar);
+usersRouter.get("/verify/:verifyToken", userToken);
+usersRouter.post("/verify", validateBody(emailSchema), repeatVerify);
+usersRouter.patch(
+  "/avatar",
+  authMiddleware,
+  updateMiddleware.single("avatar"),
+  uploadAvatar
+);
 
 export default usersRouter;

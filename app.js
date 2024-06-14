@@ -19,7 +19,7 @@ app.use(express.static(path.resolve("public")));
 
 app.use("/api/contacts", authMiddleware, contactsRouter);
 app.use("/auth", authRouter);
-app.use("/api/users", authMiddleware, usersRouter);
+app.use("/api/users", usersRouter);
 
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });
