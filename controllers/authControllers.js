@@ -17,16 +17,16 @@ export const register = async (req, res, next) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
     const defaultAvatar = gravatar.url(email);
-    const verifyToken = crypto.randomUUID();
+    const verificationToken = crypto.randomUUID();
 
     const newUser = await User.create({
       email: emailInLowerCase,
       password: passwordHash,
       avatarURL: defaultAvatar,
-      token: verifyToken,
+      verificationToken,
     });
 
-    await sendMail(email);
+    await sendMail(email, verificationToken);
 
     res.status(201).json({
       user: {

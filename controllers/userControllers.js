@@ -2,6 +2,7 @@ import jimp from "jimp";
 import * as fs from "node:fs/promises";
 import path from "node:path";
 import User from "../models/users.js";
+import sendMail from "../mail/mail.js";
 import HttpError from "../helpers/HttpError.js";
 
 export const uploadAvatar = async (req, res, next) => {
@@ -35,17 +36,17 @@ export const uploadAvatar = async (req, res, next) => {
 };
 
 export const userToken = async (req, res, next) => {
-  const { token } = req.params;
+  const { verificationToken } = req.params;
   try {
-    const user = await User.findOne({ verifyToken: token });
+    const user = await User.findOne({ verificationToken });
 
     if (user === null) {
       throw HttpError(404, "User not found");
     }
 
-    await User.findByIdAndUpdate(user._id, {
+    await User.findOneAndUpdate(user._id, {
       verify: true,
-      verifyToken: null,
+      verificationToken: null,
     });
 
     res.status(200).send({ message: "Verification successful" });
@@ -54,18 +55,18 @@ export const userToken = async (req, res, next) => {
   }
 };
 
-export async function repeatVerify(req, res, next) {
+export async function reVerification(req, res, next) {
   const { email } = req.body;
 
   try {
-    if (!email) {
-      return res.status(400).send({ message: "Please enter correct email" });
+    if (email === null) {
+      return res.status(400).send({ message: "Please enter email" });
     }
 
     const user = await User.findOne({ email });
     const token = user.verificationToken;
 
-    if (!user) {
+    if (email === null) {
       return res.status(404).send({ message: "User not found" });
     }
 
@@ -75,7 +76,7 @@ export async function repeatVerify(req, res, next) {
         .send({ message: "Verification has already been passed" });
     }
 
-    await mail.sendMail(email);
+    await sendMail(email, token);
 
     res.status(200).send({ message: "Verification email sent" });
   } catch (error) {
